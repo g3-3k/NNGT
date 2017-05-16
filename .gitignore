@@ -8,3 +8,5 @@ build
 dist/
 nngt.egg-info/
 *.so
+*.swp
+nngt/geometry/dxf_import/tests

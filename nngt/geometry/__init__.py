@@ -21,7 +21,6 @@ try:
 except ImportError:
     from .backup_shape import Shape
 
-
 __all__ = ["Shape"]
 
 try:
@@ -30,3 +29,10 @@ try:
     __all__.extend(svgtools.__all__)
 except Exception as e:
     print("Could not import svgtools: {}".format(e))
+
+try:
+    from . import dxftools
+    from .dxftools import *
+    __all__.extend(dxftools.__all__)
+except Exception as e:
+    print("Could not import dxftools: {}".format(e))

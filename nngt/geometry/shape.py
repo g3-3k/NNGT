@@ -43,10 +43,10 @@ class Shape(Polygon):
 
     @staticmethod
     def from_svg(filename, min_x=-5000., max_x=5000., unit='um', parent=None,
-                 interpolate_curve=50):
+                 nterpolate_curve=50):
         '''
         Create a shape from an SVG file.
-        
+
         Parameters
         ----------
         filename : str
@@ -74,12 +74,46 @@ class Shape(Polygon):
         except ImportError:
             raise ImportError("Install 'svg.path' to use this feature.")
 
+    @staticmethod
+    def from_dxf(filename, min_x=-5000., max_x=5000., unit='um', parent=None,
+                 nterpolate_curve=50):
+        '''
+        Create a shape from an SVG file.
+
+        Parameters
+        ----------
+        filename : str
+            Path to the file that should be loaded.
+        min_x : float, optional (default: -5000.)
+            Absolute horizontal position of the leftmost point in the
+            environment in `unit` (default: 'um'). If None, no rescaling
+            occurs.
+        max_x : float, optional (default: 5000.)
+            Absolute horizontal position of the rightmost point in the
+            environment in `unit`. If None, no rescaling occurs.
+        unit : string (default: 'um')
+            Unit in the metric system among 'um' (:math:`\mu m`), 'mm', 'cm',
+            'dm', 'm'.
+        parent : :class:`~nngt.Graph` object
+            The parent which will become a :class:`~nngt.SpatialGraph`.
+        interpolate_curve : int, optional (default: 50)
+            Number of points that should be used to interpolate a curve.
+        '''
+        try:
+            from .dxftools import culture_from_dxf
+            return culture_from_dxf(
+                filename,  min_x=min_x, max_x=max_x, unit=unit, parent=parent,
+                interpolate_curve=interpolate_curve)
+        except ImportError:
+            raise ImportError("Install 'dxfgrabber' to use this feature.")
+
+
     @classmethod
     def from_polygon(cls, polygon, min_x=-5000., max_x=5000., unit='um',
                      parent=None):
         '''
         Create a shape from a :class:`shapely.geometry.Polygon`.
-        
+
         Parameters
         ----------
         polygon : :class:`shapely.geometry.Polygon`
@@ -227,12 +261,12 @@ class Shape(Polygon):
         self._parent = weakref.proxy(parent) if parent is not None else None
         self._unit = unit
         super(Shape, self).__init__(shell, holes=holes)
-    
+
     @property
     def parent(self):
         ''' Return the parent of the :class:`~nngt.geometry.Shape`. '''
         return self._parent
-    
+
     @property
     def unit(self):
         '''
@@ -267,7 +301,7 @@ class Shape(Polygon):
         '''
         Return the positions of the neurons inside the
         :class:`~nngt.geometry.Shape`.
-        
+
         Parameters
         ----------
         unit : string (default: None)
@@ -277,7 +311,7 @@ class Shape(Polygon):
             Number of neurons to seed. This argument is considered only if the
             :class:`~nngt.geometry.Shape` has no `parent`, otherwise, a
             position is generated for each neuron in `parent`.
-        
+
         Returns
         -------
         positions : array of double with shape (N, 2)
