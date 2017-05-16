@@ -6,71 +6,75 @@
 With addition of the SEGMENT class
 S. Bottani
 """
+
 __credits__ = ['http://www.nmt.edu/tcc/help/lang/python/examples/homcoord/']
 
 
-# - - - - -   I m p o r t s
-
 import sys
-# import numpy as num # requirement partially removed
 from math import *
-from math2 import dot
 
 import numpy as np
 
-# - - - - -   M a n i f e s t   c o n s t a n t s
-RAD_45 = pi/4       # 45 degrees in radians
-RAD_90 = pi/2       # 90 degrees in radians
-RAD_180 = pi        # 180 degrees in radians
-TWO_PI  = 2.0*pi    # 360 degrees in radians
 
-# - - - - -   c l a s s   P t
+# --------- #
+# Constants #
+# --------- #
+
+RAD_45  = pi / 4.  # 45 degrees in radians
+RAD_90  = pi / 2.  # 90 degrees in radians
+RAD_180 = pi       # 180 degrees in radians
+TWO_PI  = 2. * pi  # 360 degrees in radians
+
+
+# ----------- #
+# Point class #
+# ----------- #
 
 class Pt(object):
-    '''Represents a homogeneous coordinate in 2-space.
-
-      Exports:
-        Pt(*coords):
-          [ coords is a 2-sequence or a 1-sequence containing a
-            2-sequence ->
-              return a new Pt instance representing those two
-              values as x and y, respectively
-            coords is a 1-sequence containing a 3-sequence ->
-              return a new Pt instance representing those values
-              as x, y, and w, respectively ]
-        .xy:
-          [ return a 2-tuple with the homogenized x and y values ]
-        .x:    [ return the homogenized x coordinate ]
-        .y:    [ return the homogenized y coordinate ]
-        .dist(other):
-          [ other is a Pt instance ->
-              return the distance between self and other ]
-        .bearing(p):
-          [ p is a Pt instance ->
-              return the Cartesian angle in radians from self to p ]
-        .radial(d, bearing):
-          [ (d is a distance) and (bearing is an angle in radians) ->
-              return the location at that distance and bearing as
-              a Pt instance ]
-        .toPolar():
-          [ return self in polar coordinates as a Polar instance ]
-        .__str__():  [ return self as a string ]
-        .__add__(self, other):
-          [ other is a Pt instance ->
-              return a new Pt instance whose coordinates are the
-              sum of self's and other's ]
-        .__sub__(self, other):
-          [ other is a Pt instance ->
-              return a new Pt instance whose coordinates are the
-              self's minus other's ]
-        .__cmp__(self, other):
-          [ if self and other are the same point ->
-              return 0
-            else -> return a nonzero value ]
-      State/Invariants:
-        .v     [ a numpy 3-element vector [x, y, W] ]
     '''
-# - - -   P t . _ _ i n i t _ _
+    Represents a homogeneous coordinate in 2-space.
+
+    Exports:
+    Pt(*coords):
+      [ coords is a 2-sequence or a 1-sequence containing a
+        2-sequence ->
+          return a new Pt instance representing those two
+          values as x and y, respectively
+        coords is a 1-sequence containing a 3-sequence ->
+          return a new Pt instance representing those values
+          as x, y, and w, respectively ]
+    .xy:
+      [ return a 2-tuple with the homogenized x and y values ]
+    .x:    [ return the homogenized x coordinate ]
+    .y:    [ return the homogenized y coordinate ]
+    .dist(other):
+      [ other is a Pt instance ->
+          return the distance between self and other ]
+    .bearing(p):
+      [ p is a Pt instance ->
+          return the Cartesian angle in radians from self to p ]
+    .radial(d, bearing):
+      [ (d is a distance) and (bearing is an angle in radians) ->
+          return the location at that distance and bearing as
+          a Pt instance ]
+    .toPolar():
+      [ return self in polar coordinates as a Polar instance ]
+    .__str__():  [ return self as a string ]
+    .__add__(self, other):
+      [ other is a Pt instance ->
+          return a new Pt instance whose coordinates are the
+          sum of self's and other's ]
+    .__sub__(self, other):
+      [ other is a Pt instance ->
+          return a new Pt instance whose coordinates are the
+          self's minus other's ]
+    .__cmp__(self, other):
+      [ if self and other are the same point ->
+          return 0
+        else -> return a nonzero value ]
+    State/Invariants:
+    .v     [ a numpy 3-element vector [x, y, W] ]
+    '''
 
     def __init__ ( self, *args ):
         '''Constructor.
@@ -105,21 +109,22 @@ class Pt(object):
         #   self.__inverse  :=  None ]
         w=float(w) #to force floating division in x,y properties
         self.v = (x, y, w)
-# - - -   P t . x y
-    
+
     @property
     def xy(self):
-        '''Return (x,y)
+        '''
+        Return (x,y)
         '''
         w = self.v[2]
         return (self.v[0]/w, self.v[1]/w)
-# - - -   P t . x
+
     @property
     def x(self):
-        '''Return the abscissa.
+        '''
+        Return the abscissa.
         '''
         return self.v[0]/self.v[2]
-# - - -   P t . y
+
     @property
     def y(self):
         '''Return the ordinate.
@@ -135,27 +140,25 @@ class Pt(object):
         '''
         (dx,dy) = (self-other).xy
         return sqrt ( dx*dx + dy*dy )
-# - - -   P t . b e a r i n g
 
     def bearing(self, p):
-        '''What is the bearing angle from self to p?
+        '''
+        What is the bearing angle from self to p?
         '''
         return atan2(p.y-self.y, p.x-self.x)
-# - - -   P t . r a d i a l
 
     def radial(self, d, bearing):
-        '''Return the point at a given distance and bearing.
+        '''
+        Return the point at a given distance and bearing.
         '''
         return Pt(self.x + d*cos(bearing),
                   self.y + d*sin(bearing) )
-# - - -   P t . t o P o l a r
 
     def toPolar(self):
         '''Convert to polar coordinates.
         '''
         x, y = self.xy
         return Polar(sqrt(x*x + y*y), atan2(y, x))
-# - - -   P t . _ _ s t r _ _
 
     def __str__(self):
         '''Return a string representation of self.
@@ -164,24 +167,22 @@ class Pt(object):
 
     def __repr__(self):
         return str(self)
-# - - -   P t . _ _ a d d _ _
 
     def __add__(self, other):
         '''Add two points.
         '''
         return Pt(self.x+other.x, self.y+other.y)
-# - - -   P t . _ _ s u b _ _
 
     def __sub__(self, other):
         '''Subtract two points.
         '''
         return Pt(self.x-other.x, self.y-other.y)
-    
+
     def __mul__(self, scale):
         '''Multiply by scalar.
         '''
         return Pt((self.x, self.y, 1./scale))
-    
+
     def __div__(self, scale):
         '''Multiply by scalar.
         '''
@@ -192,59 +193,64 @@ class Pt(object):
         '''
         return cmp(self.xy, other.xy)
 
-class Xform(object):
-    '''Represents an arbitrary homogeneous coordinate transform.
 
-      Exports:
-        Xform(m):
-          [ m is a 3x3 transform matrix as a array, or
-            a sequence that array() will accept as a 3x3
-            array ->
-              return a new Xform instance representing that
-              transform ]
-        .apply(p):
-          [ p is a Pt instance ->
-              return a new Pt instance representing p transformed
-              by self ]
-        .invert(p):
-          [ p is a Pt instance ->
-              return a new Pt instance pp such that
-              self.apply(pp) == p ]
-        .inverse():
-          [ return the inverse of self as an Xform instance ]
-        .compose(t):
-          [ t is an Xform instance ->
-              return a new Xform representing the composition of
-              self followed by t ]
-        .offset():
-          [ return the net offset that self will shift the origin,
-            as a Pt instance ]
-        .angle():
-          [ return the net angle that self will rotate the unit
-            vector from (0,0) to (1,1) ]
-        .mag():
-          [ return the net magnification that self will apply to the
-            unit vector ]
-        .__str__(self):
-          [ return a string representation of self ]
-      State/Invariants:
-        self._m:
-          [ a 3x3 array representing the argument passed
-            to the constructor ]
-        self._mInverse:
-          [ the inverse of self._m or None ]
-        self.__offset:
-          [ the net translation of self or None ]
-        self.__angle:
-          [ the net rotation of self or None ]
-        self._mag:
-          [ the net uniform scaling of self or None ]
-        ORIGIN:      [ the origin as a Pt instance ]
-        UNIT:        [ a point 1.0 along the line x=y ]
+# -------------------- #
+# Transformation class #
+# -------------------- #
+
+class Xform(object):
+    '''
+    Represents an arbitrary homogeneous coordinate transform.
+
+    Exports:
+    Xform(m):
+      [ m is a 3x3 transform matrix as a array, or
+        a sequence that array() will accept as a 3x3
+        array ->
+          return a new Xform instance representing that
+          transform ]
+    .apply(p):
+      [ p is a Pt instance ->
+          return a new Pt instance representing p transformed
+          by self ]
+    .invert(p):
+      [ p is a Pt instance ->
+          return a new Pt instance pp such that
+          self.apply(pp) == p ]
+    .inverse():
+      [ return the inverse of self as an Xform instance ]
+    .compose(t):
+      [ t is an Xform instance ->
+          return a new Xform representing the composition of
+          self followed by t ]
+    .offset():
+      [ return the net offset that self will shift the origin,
+        as a Pt instance ]
+    .angle():
+      [ return the net angle that self will rotate the unit
+        vector from (0,0) to (1,1) ]
+    .mag():
+      [ return the net magnification that self will apply to the
+        unit vector ]
+    .__str__(self):
+      [ return a string representation of self ]
+    State/Invariants:
+    self._m:
+      [ a 3x3 array representing the argument passed
+        to the constructor ]
+    self._mInverse:
+      [ the inverse of self._m or None ]
+    self.__offset:
+      [ the net translation of self or None ]
+    self.__angle:
+      [ the net rotation of self or None ]
+    self._mag:
+      [ the net uniform scaling of self or None ]
+    ORIGIN:      [ the origin as a Pt instance ]
+    UNIT:        [ a point 1.0 along the line x=y ]
     '''
     ORIGIN = Pt(0,0)
     UNIT = ORIGIN.radial(1.0, RAD_45)
-# - - -   X f o r m . _ _ i n i t _ _
 
     def __init__ ( self, m ):
         '''Constructor.
@@ -259,7 +265,6 @@ class Xform(object):
         self._m = m
         #-- 2 --
         self._mInverse = None
-# - - -   X f o r m . a p p l y
 
     def apply ( self, p ):
         '''Transform a point.
@@ -272,17 +277,14 @@ class Xform(object):
         #-- 2 --
         # [ return a Pt instance representing pp.v ]
         return Pt(pp)
-# - - -   X f o r m . _ _ c a l l _ _
 
     def __call__(self, p):
         return self.apply(p)
-# - - -   X f o r m . i n v e r t
 
     def invert ( self, p ):
         '''Return p transformed by the inverse of self, as a Pt.
         '''
         return self.inverse().apply ( p )
-# - - -   X f o r m . i n v e r s e
 
     def inverse ( self ):
         '''Return the inverse transform as an Xform.
@@ -296,7 +298,6 @@ class Xform(object):
 
         #-- 2 --
         return Xform(self._mInverse)
-# - - -   X f o r m . _ _ s t r _ _
 
     def __str__(self):
         '''Display self as a string
@@ -310,7 +311,7 @@ class Xform(object):
         '''Return the composition of two transforms.
         '''
         return Xform ( dot ( t2._m, self._m ) )
-    
+
     def __mul__ ( self, other ):
         '''Implement '*'
         '''
@@ -327,79 +328,17 @@ class Xform(object):
         pt=Polar(1.0,angle).toCartesian()
         pt=self(pt)-self.offset()
         return atan2(pt.y,pt.x)
-        
+
 
     def mag(self):
         '''Return the net (uniform) scaling of this transform.
         '''
         return self(self.ORIGIN ).dist(self(self.UNIT))
 
-        
-# - - -   X l a t e
 
-def Xlate(*p):
-    '''Create a translation transform.
-    '''
-    #-- 1 --
-    # [ dx  :=  first value from p
-    #   dy  :=  second value from p ]
-    dx, dy = argPair ( *p )
-
-    #-- 2 --
-    return Xform ( [ (1, 0, dx),
-                     (0, 1, dy),
-                     (0, 0, 1)  ] )
-# - - -   X s c a l e
-
-def Xscale(*p):
-    '''Create a scaling transform.
-    '''
-    #-- 1 --
-    # [ if p is a single value or single-valued iterable ->
-    #     sx  :=  that value
-    #     sy  :=  that value
-    #   else ->
-    #     sx  :=  the first value from p
-    #     sy  :=  the second value from p ]
-    sx, sy = argPair ( *p )
-
-    #-- 2 --
-    # [ return an Xform for scaling x by sx and scaling y by sy ]
-    return Xform ( [ (sx, 0,  0),
-                     (0,  sy, 0),
-                     (0,  0,  1) ] )
-# - - -   X r o t a t e
-
-def Xrotate(theta):
-    '''Create a rotation transform.
-    '''
-    #-- 1 --
-    sint = sin(theta)
-    cost = cos(theta)
-
-    #-- 2 --
-    return Xform ( [ (cost, -sint, 0),
-                     (sint, cost,  0),
-                     (0,    0,     1) ] )
-# - - -   X r o t a r o u n d
-
-def Xrotaround ( p, theta ):
-    '''Rotation of theta radians around point p.
-    '''
-    #-- 1 --
-    # [ t1  :=  an Xform that translates point p to the origin
-    #   r  :=  an Xform that rotates theta radians around the origin
-    #   t2  :=  an Xform that translates the origin to point p ]
-    t1 = Xlate ( [ -v
-                   for v in p.xy ] )
-    r = Xrotate ( theta )
-    t2 = Xlate ( p.xy )
-
-    #-- 2 --
-    # [ return an Xform instance representing t1, then r, then t2 ]
-    return t1.compose(r).compose(t2)
-
-# - - - - -   c l a s s   P o l a r
+# ----------- #
+# Polar class #
+# ----------- #
 
 class Polar(object):
     '''Represents a point in polar coordinates.
@@ -415,20 +354,17 @@ class Polar(object):
         .__str__():
           [ return self as a string "(r, theta)" ]
     '''
-# - - -   P o l a r . _ _ i n i t _ _
 
     def __init__(self, *p):
         '''Constructor
         '''
         self.r, self.theta = argPair(*p)
-# - - -   P o l a r . t o C a r t e s i a n
 
     def toCartesian(self):
         '''Return self in rectangular coordinates as a Pt instance.
         '''
         return Pt(self.r * cos(self.theta),
                   self.r * sin(self.theta))
-# - - -   P o l a r . _ _ s t r _ _
 
     def __str__(self):
         '''Return self as a string.
@@ -436,7 +372,10 @@ class Polar(object):
         return ( "(%.4g, %.4gd)" %
                  (self.r, degrees(self.theta)) )
 
-# - - - - -   c l a s s   L i n e
+
+# ---------- #
+# Line class #
+# ---------- #
 
 class Line(object):
     '''Represents a geometric line.
@@ -463,7 +402,6 @@ class Line(object):
             (bears is a Cartesian bearing in radians) ->
               return the line through p at bearing (bears) ]
     '''
-# - - -   L i n e . _ _ i n i t _ _
 
     def __init__(self, a, b, c):
         '''Constructor.
@@ -471,13 +409,11 @@ class Line(object):
         self.a = float(a)
         self.b = float(b)
         self.c = float(c)
-# - - -   L i n e . _ _ s t r _ _
 
     def __str__(self):
         '''Return a string representing self.
         '''
         return "%.4gx + %.4gy + %.4g = 0" % (self.a, self.b, self.c)
-# - - -   L i n e . i n t e r s e c t
 
     def intersect(self, other):
         '''Where do lines self and other intersect?
@@ -498,7 +434,6 @@ class Line(object):
 
         #-- 3 --
         return Pt(x, y)
-# - - -   L i n e . t w o P o i n t
 
     @staticmethod
     def twoPoint(p1, p2):
@@ -530,7 +465,6 @@ class Line(object):
         # [ return a new Line instance having a=(-m), b=1, and
         #   c=(m*x1-y1) ]
         return Line(-m, 1.0, (m*x1-y1))
-# - - -   L i n e . p o i n t B e a r i n g
 
     @staticmethod
     def pointBearing(p, bears):
@@ -555,7 +489,6 @@ class Line(object):
         #-- 3 --
         # [ return a Line with a=m, b=-1.0, and c=(-m*px + py) ]
         return Line(m, -1.0, py - m*px)
-# - - -   a r g P a i r
 
 def argPair(*p):
     '''Process a pair of values passed in various ways.
@@ -587,19 +520,12 @@ def argPair(*p):
     #-- 4 --
     if len(values) == 1:
         return (values[0], values[0])
-    else:
-        return (values[0], values[1])
-# - - -   n o r m A n g l e
-
-def normAngle(theta):
-    '''Normalize an angle in radians to [0, 2*pi)
-    '''
-    return theta % TWO_PI
+    return (values[0], values[1])
 
 
-
-
-# - - - - -   c l a s s   S e g m e n t 
+# ------------- #
+# Segment class #
+# ------------- #
 
 class Segment(object):
     '''Represents a geometric Segment.
@@ -619,7 +545,6 @@ class Segment(object):
               else -> raise ValueError ]
 
     '''
-# - - -   S e g m e n t . _ _ i n i t _ _
 
     def __init__(self, a, b):
         '''Constructor.
@@ -628,17 +553,14 @@ class Segment(object):
         self.b = b
         self.length=np.sqrt((b.x-a.x)**2+(b.y-a.y)**2)
         self.dir=np.array((b.x-a.x),(b.y-a.y))/self.length
-# - - -    S e g m e n t . _ _ s t r _ _
 
     def __str__(self):
         '''Return a string representing self.
         '''
         return "(%.4gx , %.4gy )" % (self.a, self.b)
 
-# - - -    S e g m e n t . i n t e r s e c t
-
     def intersect(self, other):
-        ''' If segments self and other intersect return the intersection point as 
+        ''' If segments self and other intersect return the intersection point as
         a Pt instance
         '''
         #-- 1 --
@@ -679,5 +601,99 @@ class Segment(object):
 
         if (is_in_segment(intersection,self) and (is_in_segment(intersection,other))) :
             return intersection
-        else :
-            return False
+        return False
+
+
+# ----- #
+# Tools #
+# ----- #
+
+def dot(a,b):
+    '''
+    Generalized dot product.
+    '''
+    try: #vector*vector
+        return sum(map( operator.mul, a, b))
+    except:
+        pass
+    try: #matrix*vector
+        return [dot(line,b) for line in a]
+    except:
+        pass
+    #matrix*matrix
+    res=[dot(a,col) for col in zip(*b)]
+    return map(list, zip(*res))
+
+
+def normAngle(theta):
+    '''
+    Normalize an angle in radians to [0, 2*pi).
+    '''
+    return theta % TWO_PI
+
+
+# TRANSFORM FUNCTIONS
+
+def Xlate(*p):
+    '''
+    Create a translation transform.
+    '''
+    #-- 1 --
+    # [ dx  :=  first value from p
+    #   dy  :=  second value from p ]
+    dx, dy = argPair ( *p )
+
+    #-- 2 --
+    return Xform ( [ (1, 0, dx),
+                     (0, 1, dy),
+                     (0, 0, 1)  ] )
+
+
+def Xscale(*p):
+    '''
+    Create a scaling transform.
+    '''
+    #-- 1 --
+    # [ if p is a single value or single-valued iterable ->
+    #     sx  :=  that value
+    #     sy  :=  that value
+    #   else ->
+    #     sx  :=  the first value from p
+    #     sy  :=  the second value from p ]
+    sx, sy = argPair ( *p )
+
+    #-- 2 --
+    # [ return an Xform for scaling x by sx and scaling y by sy ]
+    return Xform ( [ (sx, 0,  0),
+                     (0,  sy, 0),
+                     (0,  0,  1) ] )
+
+
+def Xrotate(theta):
+    '''Create a rotation transform.
+    '''
+    #-- 1 --
+    sint = sin(theta)
+    cost = cos(theta)
+
+    #-- 2 --
+    return Xform ( [ (cost, -sint, 0),
+                     (sint, cost,  0),
+                     (0,    0,     1) ] )
+
+
+def Xrotaround ( p, theta ):
+    '''Rotation of theta radians around point p.
+    '''
+    #-- 1 --
+    # [ t1  :=  an Xform that translates point p to the origin
+    #   r  :=  an Xform that rotates theta radians around the origin
+    #   t2  :=  an Xform that translates the origin to point p ]
+    t1 = Xlate ( [ -v
+                   for v in p.xy ] )
+    r = Xrotate ( theta )
+    t2 = Xlate ( p.xy )
+
+    #-- 2 --
+    # [ return an Xform instance representing t1, then r, then t2 ]
+    return t1.compose(r).compose(t2)
